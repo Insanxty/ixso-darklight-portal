@@ -1,4 +1,4 @@
-import { Trophy, Shield, Lightning } from "lucide-react";
+import { Trophy, Shield, Zap } from "lucide-react";
 import { ReactNode } from "react";
 
 interface FeatureCardProps {
@@ -11,7 +11,7 @@ const FeatureCard = ({ title, description, icon }: FeatureCardProps) => {
   const IconComponent: Record<string, ReactNode> = {
     trophy: <Trophy className="w-6 h-6 text-ixso-purple" />,
     shield: <Shield className="w-6 h-6 text-ixso-purple" />,
-    lightning: <Lightning className="w-6 h-6 text-ixso-purple" />,
+    lightning: <Zap className="w-6 h-6 text-ixso-purple" />,
   };
 
   return (
