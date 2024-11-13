@@ -1,13 +1,40 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Navbar from "@/components/Navbar";
+import HeroSection from "@/components/HeroSection";
+import FeatureCard from "@/components/FeatureCard";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <main className="min-h-screen">
+      <Navbar />
+      <HeroSection />
+      
+      <section className="max-w-7xl mx-auto px-6 py-24">
+        <div className="text-center mb-16 animate-fade-up">
+          <h2 className="text-4xl font-bold mb-4">Why Choose IXSO</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Experience the most advanced lighting system in Roblox
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-8">
+          <FeatureCard
+            icon="trophy"
+            title="Premium Quality"
+            description="Industry-leading lighting effects and performance"
+          />
+          <FeatureCard
+            icon="shield"
+            title="Exclusive Access"
+            description="Join an elite community of lighting designers"
+          />
+          <FeatureCard
+            icon="lightning"
+            title="Powerful Controls"
+            description="Advanced features for professional stage management"
+          />
+        </div>
+      </section>
+    </main>
   );
 };
 
