@@ -12,6 +12,7 @@ interface FileData {
   content_type: string;
   size: number;
   created_at: string;
+  file_path: string;
 }
 
 const Dashboard = () => {
@@ -81,7 +82,6 @@ const Dashboard = () => {
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-gradient">IXSO Dashboard</h1>
-        
         <div className="glass-card p-6">
           <h2 className="text-xl font-semibold mb-4">Available Files</h2>
           <Table>
@@ -112,9 +112,9 @@ const Dashboard = () => {
                     </button>
                   </TableCell>
                 </TableRow>
-              </TableBody>
-            </Table>
-          </div>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>
