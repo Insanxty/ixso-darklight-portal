@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Download } from "lucide-react";
+import { Download, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface FileData {
   id: string;
@@ -19,6 +20,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [files, setFiles] = useState<FileData[]>([]);
   const [session, setSession] = useState<Session | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -28,8 +30,24 @@ const Dashboard = () => {
       }
       setSession(session);
       fetchFiles();
+      checkAdminStatus(session.user.id);
     });
   }, [navigate]);
+
+  const checkAdminStatus = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error("Error checking admin status:", error);
+      return;
+    }
+
+    setIsAdmin(data?.is_admin || false);
+  };
 
   const fetchFiles = async () => {
     const { data, error } = await supabase
@@ -43,6 +61,47 @@ const Dashboard = () => {
     }
 
     setFiles(data || []);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // Upload file to storage
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('ixso-files')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        toast.error("Error uploading file");
+        return;
+      }
+
+      // Save file metadata to database
+      const { error: dbError } = await supabase
+        .from('files')
+        .insert({
+          filename: file.name,
+          file_path: filePath,
+          content_type: file.type,
+          size: file.size,
+          user_id: session?.user.id
+        });
+
+      if (dbError) {
+        toast.error("Error saving file metadata");
+        return;
+      }
+
+      toast.success("File uploaded successfully");
+      fetchFiles();
+    } catch (error) {
+      toast.error("Error uploading file");
+    }
   };
 
   const downloadFile = async (filePath: string, fileName: string) => {
@@ -82,8 +141,31 @@ const Dashboard = () => {
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-gradient">IXSO Dashboard</h1>
+        
         <div className="glass-card p-6">
-          <h2 className="text-xl font-semibold mb-4">Available Files</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Available Files</h2>
+            {isAdmin && (
+              <div>
+                <input
+                  type="file"
+                  id="file-upload"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                <label htmlFor="file-upload">
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer flex items-center gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload File
+                  </Button>
+                </label>
+              </div>
+            )}
+          </div>
+          
           <Table>
             <TableHeader>
               <TableRow>

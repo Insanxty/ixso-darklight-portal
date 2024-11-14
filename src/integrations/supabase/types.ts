@@ -51,16 +51,19 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_admin: boolean | null
           username: string | null
         }
         Insert: {
           created_at?: string
           id: string
+          is_admin?: boolean | null
           username?: string | null
         }
         Update: {
           created_at?: string
           id?: string
+          is_admin?: boolean | null
           username?: string | null
         }
         Relationships: []
